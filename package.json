@@ -1,0 +1,30 @@
+{
+  "name": "blackstone-recruitment",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env platform/server.mjs --demo",
+    "start": "node --env-file-if-exists=.env platform/server.mjs",
+    "setup": "node --env-file-if-exists=.env platform/setup.mjs",
+    "test": "node --test platform/tests/*.test.mjs",
+    "check": "node --check platform/server.mjs && node --check platform/app.mjs && node --check platform/public/app.js && node --check platform/public/flows.js && node --check platform/public/motion.js && node --check platform/public/journey.js",
+    "build": "node scripts/build-platform.mjs",
+    "build:concepts": "node scripts/build.mjs",
+    "backup": "node --env-file-if-exists=.env platform/backup.mjs"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "mammoth": "^1.12.3",
+    "multer": "^2.4.0",
+    "pdf-parse": "^2.4.5"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

@@ -1,0 +1,29 @@
+/* Render the supplied logo reference without stretching, rotating or rewriting it.
+   Replace this reference treatment with the client's master SVG when supplied. */
+.brand-reference{width:224px;aspect-ratio:555/163;position:relative;overflow:hidden;display:block;mix-blend-mode:multiply}
+.brand-reference img{position:absolute;width:205.7658%;max-width:none;left:-13.1532%;top:-46.0123%;height:auto}
+.brand-reference img{filter:grayscale(1) contrast(3);mix-blend-mode:multiply}
+.brand-reference{background:var(--bg);mix-blend-mode:normal}
+.sidebar .brand-reference{width:181px;filter:invert(1);mix-blend-mode:screen}
+[data-theme=dark] .brand-reference{filter:invert(1);mix-blend-mode:screen}
+.sidebar .brand-reference{background:#191b17;filter:none;mix-blend-mode:normal}
+[data-theme=dark] .brand-reference{background:var(--bg);filter:none;mix-blend-mode:normal}
+.sidebar .brand-reference img,[data-theme=dark] .brand-reference img{filter:grayscale(1) contrast(3) invert(1);mix-blend-mode:screen}
+[data-theme=dark] .sidebar .brand-reference{background:#191b17}
+.sidebar .brand{padding:0 5px;margin-bottom:28px}
+.public-nav .brand{padding:7px 0}
+@media(max-width:1200px){.sidebar .brand-reference{width:168px}}
+@media(max-width:960px){.sidebar .brand-reference{width:155px}.public-nav .brand-reference{width:196px}}
+@media(max-width:760px){.public-nav .brand-reference{width:195px}.sidebar .brand-reference{width:192px}.footer-main .brand-reference{width:225px}}
+@media(max-width:380px){.public-nav .brand-reference{width:170px}}
+/* The main landmark receives focus after navigation without a page-sized ring. */
+#content:focus{outline:none}
+.panel,.dashboard-grid>*,.two-col>*,.profile-split>*,.form-grid>*,.workspace-main,.workspace-content{min-width:0}
+.table-wrap{max-width:100%;position:relative}
+.mobile-account-link{display:none}
+.side-nav a{font-size:13px}.field label,.label{font-size:14px}
+table{font-size:12px}th{font-size:10px}.person-cell strong{font-size:12px}.person-cell small{font-size:11px}
+.stat-top{font-size:12px}.stat-card small{font-size:11px}.pipeline-row{font-size:12px}
+.interview-item h4{font-size:13px}.interview-item p{font-size:12px}.activity-item p{font-size:12px}.activity-item small{font-size:11px}
+.tag{font-size:11px}.dashboard-heading p{font-size:14px}.job-card p{font-size:14px}
+@media(max-width:760px){.mobile-account-link{display:block}.stat-top{font-size:11px}.stat-card small{font-size:10px}.workspace-topbar .breadcrumb{font-size:11px}.sidebar{overflow-y:auto}.sidebar-end{padding-top:20px}}
