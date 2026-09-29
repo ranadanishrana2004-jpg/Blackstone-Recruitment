@@ -13,8 +13,22 @@ function bindJourney(path) {
     if(a.closest('.nav-links'))a.classList.toggle('active',active);
   });
   const next=intendedDestination();
+  if(path==='/login'){
+    const staffEntry=next?.startsWith('/workspace');
+    const note=document.createElement('div');note.className='notice account-guidance';
+    note.innerHTML=staffEntry?'Recruiter access is created by your Blackstone administrator. Use your staff email and password. Need access? <a href="/contact">Contact the team</a>.':'Hiring with Blackstone? <a href="/login?next=%2Fworkspace">Recruiter sign in</a> · <a href="/employers">Send a hiring enquiry</a>.';
+    document.querySelector('.auth-form')?.append(note);
+    if(staffEntry){document.querySelector('.auth-form h1').textContent='Your recruitment workspace.';document.querySelector('.auth-bottom').innerHTML='Looking for a job? <a href="/register">Create a candidate account</a>';}
+  }
+  if(path==='/dashboard/cv'&&!state.user.talent_pool){
+    const note=document.createElement('div');note.className='notice account-guidance';note.innerHTML='Want our team to consider you for future roles? <a href="/dashboard/profile">Open your profile</a>, select <strong>Join the talent community</strong> and save. Uploading a CV alone does not opt you in.';
+    document.querySelector('#content .two-col')?.before(note);
+  }
+  if(path==='/reset'&&!new URLSearchParams(location.search).get('token')){
+    document.querySelector('.auth-form form').innerHTML='<div class="notice">Open the complete link from your password reset email, or <a href="/forgot">request account recovery</a>.</div>';
+  }
   if(next&&['/login','/register','/forgot'].includes(path)) {
-    document.querySelectorAll('.auth-bottom a,.auth-form a[href="/forgot"]').forEach(a=>{
+    document.querySelectorAll((path==='/login'&&next.startsWith('/workspace'))?'.auth-form a[href="/forgot"]':'.auth-bottom a,.auth-form a[href="/forgot"]').forEach(a=>{
       a.href=new URL(a.href).pathname+'?next='+encodeURIComponent(next);
     });
     if(/^\/jobs\/\d+$/.test(next)){
@@ -67,4 +81,11 @@ function candidateNextSteps(documentCount,applicationCount){
   ];
   if(steps.every(step=>step[0]))return '';
   return `<section class="panel setup-panel" aria-label="Getting started"><div class="panel-header"><div><h3>Your next steps</h3><p>Start wherever you like. A complete profile helps our team get to know you.</p></div><span class="tag">${steps.filter(s=>s[0]).length} / 3 complete</span></div><div class="setup-steps">${steps.map(([done,title,copy,href],i)=>`<a href="${href}" class="setup-step"><span class="setup-number">${done?icon('check'):i+1}</span><span><strong>${title}${done?' · Done':''}</strong><small>${copy}</small></span>${icon('arrow')}</a>`).join('')}</div></section>`;
+}
+
+function journeyRecovery(error,path){
+ const closed=error.status===404&&/^\/jobs\/\d+$/.test(path),privatePage=error.status===403;
+ const title=closed?'This opportunity is no longer available.':privatePage?'This space is private.':error.status===404?'This record could not be found.':'Something needs a moment.';
+ const primary=closed?'<a class="btn" href="/jobs">Explore current opportunities '+icon('arrow')+'</a>':privatePage?`<a class="btn" href="${state.user?base():'/login'}">${state.user?'Go to my dashboard':'Sign in'} ${icon('arrow')}</a>`:error.status===404?`<a class="btn" href="${state.user?base():'/jobs'}">Back to ${state.user?'my dashboard':'opportunities'} ${icon('arrow')}</a>`:'<button class="btn" data-action="retry">Try again '+icon('arrow')+'</button>';
+ return publicShell(`<div class="container page-body"><div class="page-head"><div class="eyebrow">YOUR NEXT STEP</div><h1>${title}</h1><p>${closed?'The role may have closed. You can explore other opportunities or contact our team for guidance.':e(error.message)}</p><div class="hero-actions">${primary}<a class="text-link" href="/contact">Contact our team</a></div></div></div>`);
 }
