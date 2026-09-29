@@ -3,12 +3,16 @@ import {readFileSync} from 'node:fs';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import multer from 'multer';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, createHash } from 'node:crypto';
 import { Worker } from 'node:worker_threads';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { openDB,hashPassword,verifyPassword,digest,now,transaction,audit,notify,seedDemo } from './db.mjs';
 const publicDir=fileURLToPath(new URL('./public/',import.meta.url));
+const pageHtml=readFileSync(path.join(publicDir,'index.html'),'utf8').replace(/(href|src)="(\/[\w/-]+\.(?:css|js))"/g,(_,attribute,url)=>{
+ const version=createHash('sha256').update(readFileSync(path.join(publicDir,url))).digest('hex').slice(0,12);
+ return `${attribute}="${url}?v=${version}"`;
+});
 const stages=['Applied','Reviewing','Shortlisted','Interview','Offer','Hired','Declined','Withdrawn'];
 const markets=JSON.parse(readFileSync(new URL('./public/markets.json',import.meta.url),'utf8'));
 const countryValues=new Set(markets.countries.map(c=>c.value));
@@ -97,8 +101,8 @@ export async function createApp(config={}){
  app.patch('/api/admin/team/:id',admin,(req,res)=>{if(Number(req.params.id)===req.user.id)fail(422,'You cannot deactivate your own account.');const active=bool(req.body.active);const r=db.prepare("UPDATE users SET active=? WHERE id=? AND role IN ('admin','recruiter')").run(active,req.params.id);if(!r.changes)fail(404,'Team member not found.');if(!active)db.prepare('DELETE FROM sessions WHERE user_id=?').run(req.params.id);audit(db,req.user.id,active?'Staff account activated':'Staff account deactivated',req.params.id);res.json({ok:true})});
  app.get('/api/admin/audit',admin,(req,res)=>res.json({events:db.prepare('SELECT a.*,u.name FROM audit a LEFT JOIN users u ON u.id=a.actor_id ORDER BY a.id DESC LIMIT 200').all()}));
  app.use('/api',(req,res)=>res.status(404).json({error:'Endpoint not found.'}));
- app.use(express.static(publicDir,{maxAge:production?'1h':0,index:false}));
- app.get('/{*path}',(req,res)=>res.sendFile(path.join(publicDir,'index.html')));
+ app.use(express.static(publicDir,{maxAge:production?'1h':0,index:false,setHeaders:(res,file)=>{if(/\.(?:html|css|js)$/.test(file))res.setHeader('Cache-Control','no-cache');}}));
+ app.get('/{*path}',(req,res)=>res.set('Cache-Control','no-cache').type('html').send(pageHtml));
  app.use((error,req,res,next)=>{if(res.headersSent)return next(error);if(error instanceof multer.MulterError)return res.status(422).json({error:error.code==='LIMIT_FILE_SIZE'?'Your CV must be smaller than 5 MB.':'Upload one CV file at a time.'});const status=error.status||500;if(status>=500)console.error(`[${now()}] ${req.method} ${req.path}: ${error.name}`);res.status(status).json({error:status>=500&&!error.status?'Something went wrong. Please try again.':error.message});});
  return {app,db};
 }
