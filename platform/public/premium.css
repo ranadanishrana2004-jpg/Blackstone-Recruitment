@@ -73,3 +73,18 @@ html[data-theme=light] .dashboard-heading{margin-bottom:32px}
 html[data-theme=light] .footer-main{padding:48px 0}
 @media(max-width:1100px){html[data-theme=light] .hero-layout{gap:35px}html[data-theme=light] .market-bar{flex-wrap:wrap}html[data-theme=light] .nav-links{gap:20px}}
 @media(max-width:760px){html[data-theme=light] .public-nav{min-height:86px}html[data-theme=light] .public-nav .brand-reference{width:180px}html[data-theme=light] .hero{padding:35px 0 40px}html[data-theme=light] .hero-layout{grid-template-columns:1fr;gap:32px}html[data-theme=light] .hero-copy h1{font-size:55px}html[data-theme=light] .hero-image{height:420px;border-radius:105px 5px 5px 5px;box-shadow:8px 8px 0 #f0eee6}html[data-theme=light] .image-corner{border-radius:85px 2px 2px 2px}html[data-theme=light] .market-bar{display:grid;grid-template-columns:1fr;gap:20px}html[data-theme=light] .market-bar a{justify-content:start}html[data-theme=light] .section{padding:50px 0}html[data-theme=light] .section-head h2{font-size:35px}html[data-theme=light] .page-head{margin:35px 0 28px}html[data-theme=light] .page-head h1{font-size:43px}html[data-theme=light] .dark-panel,html[data-theme=light] .cta-band{padding:28px}html[data-theme=light] .btn{padding:13px 19px}}
+
+/* Larger navigation and controls, with generous targets on every screen. */
+html .public-nav .nav-links a,html .public-nav .signin-link{font-size:17px;font-weight:600;line-height:1.5}
+html .btn,html .btn.small{font-size:16px;min-height:48px;line-height:1.4}
+html .text-link,html .mini-link,html .side-nav a{font-size:15px}
+html .side-nav a{min-height:46px}
+html input,html select,html textarea,html[data-theme=light] input,html[data-theme=light] select,html[data-theme=light] textarea{font-size:16px}
+html .footer-links a{font-size:15px;overflow-wrap:anywhere}
+.luxury-editorial{margin:52px 0;position:relative;overflow:hidden;border-radius:8px;background:#171916}
+.luxury-editorial img{width:100%;height:430px;object-fit:cover;display:block}
+.luxury-editorial figcaption{position:absolute;inset:auto 0 0;padding:50px 35px 25px;background:linear-gradient(transparent,#000b);color:#fff;font-family:'Playfair Display',serif;font-size:30px}
+.contact-team{display:flex;flex-wrap:wrap;gap:14px 28px;margin-top:24px}
+.contact-team a{font-size:16px;color:var(--text);text-underline-offset:5px}
+@media(min-width:761px) and (max-width:1200px){html .public-nav{flex-wrap:wrap;gap:16px;padding-block:20px}html .public-nav .nav-links{gap:22px}}
+@media(max-width:760px){.luxury-editorial img{height:300px}.luxury-editorial figcaption{font-size:24px;padding:40px 22px 22px}.contact-team{flex-direction:column}}

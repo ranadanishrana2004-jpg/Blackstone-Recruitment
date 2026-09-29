@@ -72,12 +72,12 @@ const blackstoneMotion = (() => {
     screen.className = 'brand-curtain';
     screen.setAttribute('role', 'status');
     screen.setAttribute('aria-label', 'Blackstone. Opening your next page.');
-    screen.innerHTML = `<div class="brand-curtain-frame" aria-hidden="true"></div>
-      <div class="brand-curtain-content" aria-hidden="true">
-        <span class="brand-curtain-eyebrow">EXCEPTIONAL PEOPLE. EXTRAORDINARY POSSIBILITIES.</span>
-        <span class="brand-reference"><img src="/assets/client-brand-reference.jpeg" alt=""></span>
-        <span class="brand-curtain-line"><i></i></span>
-        <span class="brand-curtain-caption">YOUR NEXT CHAPTER</span>
+    screen.innerHTML = `<div class="brand-curtain-content" aria-hidden="true">
+        <div class="brand-clock">
+          <svg class="brand-clock-ring" viewBox="0 0 200 200"><circle class="clock-track" cx="100" cy="100" r="94"/><circle class="clock-progress" cx="100" cy="100" r="94" pathLength="100"/></svg>
+          <span class="brand-monogram"><img src="/assets/client-brand-reference.jpeg" alt=""></span>
+        </div>
+        <span class="brand-curtain-caption">BLACKSTONE UK RECRUITMENT</span>
       </div>`;
     curtain = screen;
     document.body.append(screen);
