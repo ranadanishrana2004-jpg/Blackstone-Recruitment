@@ -3,7 +3,7 @@ import {createBackup} from './backup.mjs';
 import path from 'node:path';
 const {app,db}=await createApp({demo:process.argv.includes('--demo')});
 const port=Number(process.env.PORT)||4174,host=process.env.HOST||'127.0.0.1';
-const server=app.listen(port,host,()=>console.log(`Blackstone Recruitment running at http://${host}:${port}${process.argv.includes('--demo')?' (local demo workspace)':''}`));
+const server=app.listen(port,host,()=>console.log(`Blackstone UK Recruitment running at http://${host}:${port}${process.argv.includes('--demo')?' (local demo workspace)':''}`));
 server.requestTimeout=30000;server.headersTimeout=35000;
 // Consistent SQLite online backups, separate from filesystem snapshots.
 // Off-host backup replication is still required for disaster recovery.

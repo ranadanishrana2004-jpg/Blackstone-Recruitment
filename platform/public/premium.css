@@ -104,3 +104,7 @@ html .footer-links a:hover::after,html .footer-links a:focus-visible::after{tran
 @media(prefers-reduced-motion:reduce){html .footer-links a,html .footer-links a::after{transition:none;transform:none}}
 
 .contact-cards>.panel{margin:0}
+
+/* Clear account creation link on the sign-in screen. */
+html .auth-bottom a[href^="/register"]{display:inline-block;font-size:18px;font-weight:600;line-height:1.5;padding:8px 4px;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px}
+html .auth-bottom a[href^="/register"]:hover{color:var(--gold-deep)}
