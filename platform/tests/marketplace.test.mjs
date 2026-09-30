@@ -52,6 +52,16 @@ test('two employers recruit independently through the complete candidate journey
   assert.equal((await call('/employer/applications/'+aid,'PATCH',{status:'Shortlisted'},b.cookie)).status,404);
   assert.equal((await call('/employer/applications/'+aid,'PATCH',{status:'Shortlisted'},a.cookie)).status,200);
   assert.equal((await call('/applications/'+aid,'GET',null,cc)).body.application.status,'Shortlisted');
+  assert.equal((await call('/companies')).body.companies.length,1);
+  assert.equal((await call('/conversations/'+aid,'GET')).status,401);
+  assert.equal((await call('/conversations/'+aid,'GET',null,b.cookie)).status,404);
+  assert.equal((await call('/conversations/'+aid,'POST',{body:'Private message'},b.cookie)).status,404);
+  assert.equal((await call('/conversations/'+aid,'POST',{body:'When can we speak?'},a.cookie)).status,201);
+  assert.equal((await call('/conversations/'+aid,'POST',{body:'Tomorrow works.'},cc)).status,201);
+  const conversation=(await call('/conversations/'+aid,'GET',null,cc)).body;
+  assert.deepEqual(conversation.messages.map(m=>m.body),['When can we speak?','Tomorrow works.']);
+  assert.deepEqual(conversation.events.map(v=>v.status),['Applied','Shortlisted']);
+  assert.ok((await call('/notifications','GET',null,a.cookie)).body.notifications.some(n=>n.title==='New application message'));
   await call('/employer/applications/'+aid+'/notes','POST',{body:'Arrange a conversation'},a.cookie);
   assert.equal((await call('/applications/'+aid,'GET',null,cc)).body.notes.length,0);
   const interview={application_id:aid,starts_at:new Date(Date.now()+86400000).toISOString(),duration:30,timezone:'Europe/London',location:'https://example.com/meeting'};

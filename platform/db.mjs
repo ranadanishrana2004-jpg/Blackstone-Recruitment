@@ -52,6 +52,11 @@ export function openDB(directory) {
  }
  db.exec(`CREATE TABLE IF NOT EXISTS companies(id INTEGER PRIMARY KEY,owner_id INTEGER NOT NULL UNIQUE REFERENCES users(id),name TEXT NOT NULL,website TEXT NOT NULL DEFAULT '',description TEXT NOT NULL DEFAULT '',location TEXT NOT NULL DEFAULT '',country TEXT NOT NULL DEFAULT '',sector TEXT NOT NULL DEFAULT '',created_at TEXT NOT NULL,updated_at TEXT NOT NULL);`);
  if(!db.prepare('PRAGMA table_info(jobs)').all().some(c=>c.name==='company_id'))db.exec('ALTER TABLE jobs ADD COLUMN company_id INTEGER REFERENCES companies(id)');
+ db.exec(`CREATE TABLE IF NOT EXISTS application_messages(id INTEGER PRIMARY KEY,application_id INTEGER NOT NULL REFERENCES applications(id) ON DELETE CASCADE,author_id INTEGER NOT NULL REFERENCES users(id),body TEXT NOT NULL,created_at TEXT NOT NULL);
+ CREATE INDEX IF NOT EXISTS idx_messages_application ON application_messages(application_id,id);
+ CREATE TABLE IF NOT EXISTS application_events(id INTEGER PRIMARY KEY,application_id INTEGER NOT NULL REFERENCES applications(id) ON DELETE CASCADE,status TEXT NOT NULL,created_at TEXT NOT NULL);
+ CREATE TRIGGER IF NOT EXISTS application_created AFTER INSERT ON applications BEGIN INSERT INTO application_events(application_id,status,created_at) VALUES(NEW.id,NEW.status,NEW.created_at); END;
+ CREATE TRIGGER IF NOT EXISTS application_stage_changed AFTER UPDATE OF status ON applications WHEN OLD.status != NEW.status BEGIN INSERT INTO application_events(application_id,status,created_at) VALUES(NEW.id,NEW.status,NEW.updated_at); END;`);
  db.exec('CREATE INDEX IF NOT EXISTS idx_jobs_company ON jobs(company_id,status); PRAGMA user_version=3');
  return db;
 }
