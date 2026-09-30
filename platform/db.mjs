@@ -11,7 +11,7 @@ export async function verifyPassword(password,stored) { const [salt,key]=stored.
 export function openDB(directory) {
  mkdirSync(directory,{recursive:true});const db=new DatabaseSync(path.join(directory,'blackstone.sqlite'));
  db.exec(`PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; PRAGMA synchronous=FULL;
- CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY,email TEXT NOT NULL UNIQUE COLLATE NOCASE,name TEXT NOT NULL,password TEXT NOT NULL,role TEXT NOT NULL DEFAULT 'candidate' CHECK(role IN ('candidate','recruiter','admin')),phone TEXT NOT NULL DEFAULT '',location TEXT NOT NULL DEFAULT '',headline TEXT NOT NULL DEFAULT '',bio TEXT NOT NULL DEFAULT '',skills TEXT NOT NULL DEFAULT '',linkedin TEXT NOT NULL DEFAULT '',ai_consent INTEGER NOT NULL DEFAULT 0,talent_pool INTEGER NOT NULL DEFAULT 0,active INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY,email TEXT NOT NULL UNIQUE COLLATE NOCASE,name TEXT NOT NULL,password TEXT NOT NULL,role TEXT NOT NULL DEFAULT 'candidate' CHECK(role IN ('candidate','recruiter','admin','employer')),phone TEXT NOT NULL DEFAULT '',location TEXT NOT NULL DEFAULT '',headline TEXT NOT NULL DEFAULT '',bio TEXT NOT NULL DEFAULT '',skills TEXT NOT NULL DEFAULT '',linkedin TEXT NOT NULL DEFAULT '',ai_consent INTEGER NOT NULL DEFAULT 0,talent_pool INTEGER NOT NULL DEFAULT 0,active INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY,user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,expires_at INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS resets(token TEXT PRIMARY KEY,user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,expires_at INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS jobs(id INTEGER PRIMARY KEY,title TEXT NOT NULL,company TEXT NOT NULL,sector TEXT NOT NULL,location TEXT NOT NULL,country TEXT NOT NULL,currency TEXT NOT NULL,salary_min INTEGER NOT NULL,salary_max INTEGER NOT NULL,period TEXT NOT NULL DEFAULT 'year',workplace TEXT NOT NULL,type TEXT NOT NULL,description TEXT NOT NULL,requirements TEXT NOT NULL,benefits TEXT NOT NULL DEFAULT '',status TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','published','closed')),featured INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
@@ -40,7 +40,19 @@ export function openDB(directory) {
    if(db.prepare('PRAGMA foreign_key_check').all().length)throw Error('Global market migration failed relationship validation.');
   });}finally{db.exec('PRAGMA foreign_keys=ON');}
  }
- db.exec('PRAGMA user_version=2');
+ const userSchema=db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'").get().sql;
+ if(!userSchema.includes("'employer'")){
+  db.prepare('VACUUM INTO ?').run(path.join(directory,'before-marketplace-'+Date.now()+'.sqlite'));
+  db.exec('PRAGMA foreign_keys=OFF');
+  try{transaction(db,()=>{
+   db.exec(userSchema.replace(/^CREATE TABLE\s+(?:"users"|users)/i,'CREATE TABLE users_marketplace').replace("'candidate','recruiter','admin'","'candidate','recruiter','admin','employer'"));
+   db.exec('INSERT INTO users_marketplace SELECT * FROM users; DROP TABLE users; ALTER TABLE users_marketplace RENAME TO users;');
+   if(db.prepare('PRAGMA foreign_key_check').all().length)throw Error('Marketplace migration relationship check failed.');
+  });}finally{db.exec('PRAGMA foreign_keys=ON');}
+ }
+ db.exec(`CREATE TABLE IF NOT EXISTS companies(id INTEGER PRIMARY KEY,owner_id INTEGER NOT NULL UNIQUE REFERENCES users(id),name TEXT NOT NULL,website TEXT NOT NULL DEFAULT '',description TEXT NOT NULL DEFAULT '',location TEXT NOT NULL DEFAULT '',country TEXT NOT NULL DEFAULT '',sector TEXT NOT NULL DEFAULT '',created_at TEXT NOT NULL,updated_at TEXT NOT NULL);`);
+ if(!db.prepare('PRAGMA table_info(jobs)').all().some(c=>c.name==='company_id'))db.exec('ALTER TABLE jobs ADD COLUMN company_id INTEGER REFERENCES companies(id)');
+ db.exec('CREATE INDEX IF NOT EXISTS idx_jobs_company ON jobs(company_id,status); PRAGMA user_version=3');
  return db;
 }
 export function transaction(db,fn){db.exec('BEGIN IMMEDIATE');try{const result=fn();db.exec('COMMIT');return result}catch(e){db.exec('ROLLBACK');throw e}}

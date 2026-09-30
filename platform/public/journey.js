@@ -16,10 +16,11 @@ function bindJourney(path) {
   if(path==='/login'){
     const staffEntry=next?.startsWith('/workspace');
     const note=document.createElement('div');note.className='notice account-guidance';
-    note.innerHTML=staffEntry?'Recruiter access is created by your Blackstone administrator. Use your staff email and password. Need access? <a href="/contact">Contact the team</a>.':'Hiring with Blackstone? <a href="/login?next=%2Fworkspace">Recruiter sign in</a> · <a href="/employers">Send a hiring enquiry</a>.';
+    note.innerHTML=staffEntry?'Recruiter access is created by your Blackstone administrator. Use your staff email and password. Need access? <a href="/contact">Contact the team</a>.':'Hiring with Blackstone? <a href="/login?next=%2Fworkspace">Blackstone staff sign in</a> · <a href="/employer/register">Create a company account</a> · <a href="/employers">Send a hiring enquiry</a>.';
     document.querySelector('.auth-form')?.append(note);
     if(staffEntry){document.querySelector('.auth-form h1').textContent='Your recruitment workspace.';document.querySelector('.auth-bottom').innerHTML='Looking for a job? <a href="/register">Create a candidate account</a>';}
   }
+  if(path==='/login'&&next?.startsWith('/employer')){document.querySelector('.auth-form h1').textContent='Your company workspace.';document.querySelector('.auth-bottom').innerHTML='New employer? <a href="/employer/register">Create a company account</a>';document.querySelector('.account-guidance').innerHTML='Sign in with the email used to register your company. Candidates can <a href="/register">create a candidate account</a>.';}
   if(path==='/dashboard/cv'&&!state.user.talent_pool){
     const note=document.createElement('div');note.className='notice account-guidance';note.innerHTML='Want our team to consider you for future roles? <a href="/dashboard/profile">Open your profile</a>, select <strong>Join the talent community</strong> and save. Uploading a CV alone does not opt you in.';
     document.querySelector('#content .two-col')?.before(note);
@@ -69,7 +70,7 @@ function applicationForm(documents,id,title){
   ${selectField('Choose your CV','document_id',documents.length?documents.map(d=>[d.id,d.name]):[['','Upload a CV below to continue']],documents[0]?.id||'','required'+(documents.length?'':' disabled'))}
   <div class="field application-upload"><label for="application-cv">${documents.length?'Or upload a different CV':'Upload your CV'}</label><input type="file" id="application-cv" accept=".pdf,.docx,.txt"><small>PDF, DOCX or TXT · Up to 5 MB · Saved privately to your CV library.</small><p class="fine" data-upload-status role="status" aria-live="polite"></p></div>
   <div class="field"><label for="cover">Your introduction (optional)</label><textarea name="cover" id="cover" maxlength="5000" placeholder="What interests you about this opportunity?"></textarea></div>
-  <label class="check-label"><input type="checkbox" name="consent" required><span>I agree to share this CV and application with Blackstone’s recruitment team for this role.</span></label><p class="error-inline" data-error role="alert"></p>
+  <label class="check-label"><input type="checkbox" name="consent" required><span>I agree to share this CV and application with the hiring company and Blackstone’s recruitment team for this role.</span></label><p class="error-inline" data-error role="alert"></p>
   <button class="btn full" type="submit" ${documents.length?'':'disabled'}>Submit application ${icon('arrow')}</button><p class="fine">You can track updates in My applications. A copy of your selected CV stays with this application.</p></form>`;
 }
 

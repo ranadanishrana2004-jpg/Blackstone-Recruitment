@@ -143,3 +143,5 @@ html .public-nav{position:relative}
 #jobs-results>.empty-state{grid-column:1 / -1;padding:60px 24px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
 #jobs-results>.empty-state h3{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:400;color:var(--ink)}
 .privacy-copy p{line-height:1.85}.privacy-copy a{text-decoration:underline;text-underline-offset:4px}
+
+.sidebar{overflow-y:auto}.job-company{font-size:13px!important;margin:14px 0 6px;color:var(--gold-deep)}.job-company a{text-decoration:underline;text-underline-offset:3px}.account-guidance{margin:20px 0}.account-guidance a{text-decoration:underline;text-underline-offset:3px}
