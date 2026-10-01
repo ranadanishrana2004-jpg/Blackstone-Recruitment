@@ -16,7 +16,7 @@ function bindJourney(path) {
   if(path==='/login'){
     const staffEntry=next?.startsWith('/workspace');
     const note=document.createElement('div');note.className='notice account-guidance';
-    note.innerHTML=staffEntry?'Recruiter access is created by your Blackstone administrator. Use your staff email and password. Need access? <a href="/contact">Contact the team</a>.':'Hiring with Blackstone? <a href="/login?next=%2Fworkspace">Blackstone staff sign in</a> · <a href="/employer/register">Create a company account</a> · <a href="/employers">Send a hiring enquiry</a>.';
+    note.innerHTML=staffEntry?'Recruiter access is created by your Blackstone administrator. Use your staff email and password. Need access? <a href="/contact">Contact the team</a>.':'Hiring? <a href="/login?next=%2Femployer">Employer sign in</a> · <a href="/employer/register">Create a company account</a>.';
     document.querySelector('.auth-form')?.append(note);
     if(staffEntry){document.querySelector('.auth-form h1').textContent='Your recruitment workspace.';document.querySelector('.auth-bottom').innerHTML='Looking for a job? <a href="/register">Create a candidate account</a>';}
   }
