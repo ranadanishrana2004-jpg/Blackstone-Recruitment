@@ -32,3 +32,14 @@ test('administrator creates a recruiter who can publish jobs but cannot grant st
  assert.equal((await request('/staff/jobs/'+created.data.id,{method:'PATCH',cookie:login.cookie,body:{...job,status:'published'}})).status,200);
  assert.equal((await request('/jobs/'+created.data.id)).status,200);
 });
+
+test('healthcare enquiries reach the staff inbox and remain private',async()=>{
+ const body={name:'Hospital Contact',email:'hospital@test.example',company:'Healthcare Test Hospital',country:'Saudi Arabia',message:'Healthcare staffing: specialist nurses in Riyadh.'};
+ const invalid=await request('/enquiries',{method:'POST',body:{...body,country:''}});assert.equal(invalid.status,422);
+ const sent=await request('/enquiries',{method:'POST',body});assert.equal(sent.status,201);
+ const inbox=await request('/staff/enquiries',{cookie:adminCookie});assert.equal(inbox.status,200);
+ assert.ok(inbox.data.enquiries.some(e=>e.company===body.company&&e.message===body.message));
+ assert.equal((await request('/staff/enquiries')).status,401);
+ assert.equal((await request('/staff/enquiries',{cookie:otherCookie})).status,403);
+ const updates=await request('/notifications',{cookie:adminCookie});assert.ok(updates.data.notifications.some(n=>n.link==='/workspace/enquiries'&&n.body.includes(body.company)));
+});

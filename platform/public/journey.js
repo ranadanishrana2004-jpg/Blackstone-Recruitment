@@ -13,6 +13,15 @@ function bindJourney(path) {
     if(a.closest('.nav-links'))a.classList.toggle('active',active);
   });
   const next=intendedDestination();
+  if(path==='/register'&&next==='/dashboard/profile?specialism=healthcare'){
+    document.querySelector('.auth-form h1').textContent='Register your healthcare interest.';
+    document.querySelector('.auth-form > p').textContent='Create your account, then add your clinical experience and choose whether to share your profile with our recruiters.';
+  }
+
+  if(path==='/dashboard/profile'&&new URLSearchParams(location.search).get('specialism')==='healthcare'){
+    const note=document.createElement('div');note.className='notice account-guidance';note.innerHTML='<strong>Register your healthcare interest.</strong> Add your clinical role, skills and preferred destinations below. Select <strong>Join the talent community</strong> and save to share your profile with our recruiters. You can then <a href="/dashboard/cv">add your CV</a>. This registers interest; it is not an application to an advertised vacancy.';document.querySelector('form[data-form="profile"]')?.prepend(note);
+  }
+
   if(path==='/login'){
     const staffEntry=next?.startsWith('/workspace');
     const note=document.createElement('div');note.className='notice account-guidance';

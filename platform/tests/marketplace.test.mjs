@@ -27,6 +27,7 @@ test('two employers recruit independently through the complete candidate journey
   const signup=mail=>call('/auth/register-employer','POST',{name:'Employer',company:mail,country:'UK',email:mail,password:'FictionalPassword!2026',consent:true,role:'admin'});
   const a=await signup('a@test.example'),b=await signup('b@test.example');assert.equal(a.status,201);assert.equal(b.status,201);assert.equal(a.body.user.role,'employer');
   const ca=(await call('/employer/company','GET',null,a.cookie)).body.company,cb=(await call('/employer/company','GET',null,b.cookie)).body.company;assert.notEqual(ca.id,cb.id);
+  assert.equal((await call('/enquiries','POST',{name:'Hospital Contact',company:'Company A',email:'a@test.example',country:'Saudi Arabia',message:'Healthcare staffing requirements'},a.cookie)).status,201,'signed-in employers can request recruitment support');
   assert.equal((await signup('a@test.example')).status,409);
   assert.equal((await call('/employer/company','PATCH',{name:'Company A',country:'UK',website:'javascript:alert(1)'},a.cookie)).status,422);
   assert.equal((await call('/employer/company','PATCH',{name:'Company A',country:'UK',description:'We build useful software.',website:'https://example.com'},a.cookie)).status,200);
