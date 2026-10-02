@@ -89,3 +89,9 @@ The local app and automated tests do not constitute a production penetration tes
 
 ## Worldwide market migration
 On first startup with the earlier three-market database, the application creates a consistent before-global-*.sqlite backup inside DATA_DIR, then rebuilds the jobs table transactionally to remove the old country and currency restrictions. Job IDs and application relationships are preserved and foreign keys are checked before commit. These private migration backups must stay outside public web storage. The country/territory and currency catalogue lives in platform/public/markets.json; review it when updating the platform runtime.
+
+
+## Brevo transactional email
+Set EMAIL_PROVIDER=brevo, BREVO_API_KEY, EMAIL_FROM="Blackstone UK Recruitment <info@bsukrecruitment.com>" and ENQUIRY_NOTIFY_EMAIL=info@bsukrecruitment.com in Render Environment. Store the API key only in server secrets. Authenticate bsukrecruitment.com and verify the sender in Brevo first. Keep the existing mailbox MX records.
+This enables password resets and generic staff alerts for new hiring enquiries. Enquiry details remain in the protected dashboard. Failed alerts do not discard enquiries; alerts are best-effort and are not automatically retried. Application and interview updates remain in-app.
+After deployment, test a reset with an existing account and check Brevo Transactional logs plus the recipient inbox. Provider acceptance is not proof of inbox delivery. Missing credentials leave email recovery disabled.
