@@ -241,3 +241,14 @@ html[data-theme] .quick-contact-action .btn:hover{background:#f4e7ca;color:#171a
 .company-registration h2{font-size:clamp(27px,3vw,36px);margin:14px 0 20px}.company-registration address{font-style:normal;line-height:1.8;color:var(--muted)}
 .registration-facts{margin:22px 0}.registration-facts>div{display:flex;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px solid var(--line)}.registration-facts dt{color:var(--muted)}.registration-facts dd{margin:0;font-weight:500;text-align:right}.company-registration a{overflow-wrap:anywhere}
 @media(max-width:600px){.footer-company{flex-direction:column;gap:5px}.registration-facts>div{flex-direction:column;gap:5px}.registration-facts dd{text-align:left}}
+
+/* Useful sector routes while the live vacancy board is empty. */
+.career-pathway{display:flex;flex-direction:column;min-width:0;padding:clamp(24px,3vw,36px);border:1px solid var(--line);border-radius:12px;background:var(--surface);transition:border-color .2s,transform .2s}
+.career-pathway:hover{border-color:var(--gold-deep);transform:translateY(-3px)}
+.career-pathway-number{font-size:11px;letter-spacing:.13em;color:var(--gold-deep)}
+.career-pathway h3{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:400;margin:24px 0 12px}
+.career-pathway p{color:var(--muted);line-height:1.7;margin:0 0 24px}.career-pathway .text-link{margin-top:auto;align-self:flex-start}
+.career-pathway-note{font-size:14px;color:var(--muted);line-height:1.8;margin:20px 0 0}.career-pathway-note a{text-decoration:underline;text-underline-offset:4px;color:var(--ink)}
+@media(prefers-reduced-motion:reduce){.career-pathway{transition:none}.career-pathway:hover{transform:none}}
+
+.sample-board-note{grid-column:1 / -1}.sample-role .job-card-top{flex-wrap:wrap;gap:8px}.sample-cv-gallery{margin-top:24px}.sample-cv-gallery details{margin-bottom:24px}.sample-cv-gallery summary{cursor:pointer;color:var(--gold-deep);padding:10px 0}.sample-cv-gallery summary:focus-visible{outline:2px solid var(--gold-deep)}

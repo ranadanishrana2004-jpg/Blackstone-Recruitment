@@ -1,0 +1,12 @@
+FICTIONAL SAMPLE CV - NOT A REAL CANDIDATE
+
+Jordan Ellis
+Software Engineer
+
+Skills
+TypeScript, Node.js, SQL, automated testing
+
+Illustrative experience
+Five years supporting specialist teams, improving processes and collaborating across departments.
+
+This file demonstrates a CV preview. No real qualifications, work history, contact details or availability are represented.
