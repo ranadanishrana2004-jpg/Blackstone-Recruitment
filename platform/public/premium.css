@@ -252,3 +252,19 @@ html[data-theme] .quick-contact-action .btn:hover{background:#f4e7ca;color:#171a
 @media(prefers-reduced-motion:reduce){.career-pathway{transition:none}.career-pathway:hover{transform:none}}
 
 .sample-board-note{grid-column:1 / -1}.sample-role .job-card-top{flex-wrap:wrap;gap:8px}.sample-cv-gallery{margin-top:24px}.sample-cv-gallery details{margin-bottom:24px}.sample-cv-gallery summary{cursor:pointer;color:var(--gold-deep);padding:10px 0}.sample-cv-gallery summary:focus-visible{outline:2px solid var(--gold-deep)}
+/* Six tactile navigation keys, with the same destinations and native link behavior. */
+html[data-theme] .public-nav .nav-links{gap:9px}
+html[data-theme] .public-nav .nav-links>a:not(.mobile-account-link){display:flex;align-items:center;justify-content:center;flex:1 1 0;width:88px;max-width:100px;min-width:0;height:62px;aspect-ratio:auto;padding:8px;text-align:center;white-space:normal;font-size:13px;font-weight:600;line-height:1.4;letter-spacing:.005em;border:1px solid #b29a6150;border-radius:5px;background:linear-gradient(160deg,#fffefa,#f0ece2);color:#282a23;box-shadow:0 4px 0 #d4cbbb,0 7px 12px #2923160a,inset 0 1px 0 #fff;transform:translateY(0);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease}
+html[data-theme] .public-nav .nav-links>a:not(.mobile-account-link)::after{content:none}
+html[data-theme] .public-nav .nav-links>a:not(.mobile-account-link):hover{border-color:#a68b4d;background:linear-gradient(160deg,#fffcf4,#ece1c8);transform:translateY(-2px);box-shadow:0 6px 0 #c6b996,0 10px 18px #29231612}
+html[data-theme] .public-nav .nav-links>a:not(.mobile-account-link):active{transform:translateY(4px);box-shadow:0 0 0 #c6b996,inset 0 2px 5px #29231616}
+html[data-theme] .public-nav .nav-links>a[aria-current=page]{border-color:#a68b4d;background:linear-gradient(160deg,#efe4c8,#e4d3aa);box-shadow:0 2px 0 #b5a175,inset 0 1px 0 #fff6;transform:translateY(2px)}
+html[data-theme] .public-nav .nav-links>a:focus-visible{outline:2px solid var(--gold-deep);outline-offset:5px}
+html[data-theme=dark] .public-nav .nav-links>a:not(.mobile-account-link){background:linear-gradient(155deg,#30342b,#20251d);color:#f5eddb;border-color:#ae96644d;box-shadow:0 4px 0 #0b100b,0 7px 12px #0003,inset 0 1px 0 #ffffff0c}
+html[data-theme=dark] .public-nav .nav-links>a:not(.mobile-account-link):hover{background:linear-gradient(155deg,#3c4031,#2b3023);border-color:#c6ac70;box-shadow:0 6px 0 #0b100b,0 10px 18px #0003}
+html[data-theme=dark] .public-nav .nav-links>a[aria-current=page]{background:linear-gradient(155deg,#493f2b,#302d22);border-color:#c6ac70;box-shadow:0 2px 0 #0b100b;color:#f7dfaa}
+html[data-theme=dark] .public-nav .nav-links>a:not(.mobile-account-link):active{box-shadow:inset 0 2px 6px #0007}
+@media(min-width:1281px){html[data-theme] .public-nav{gap:16px;padding-block:17px}html[data-theme] .public-nav .nav-links{flex:1;justify-content:center}}
+@media(max-width:1280px){html[data-theme] .public-nav .nav-links.open{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:12px;padding:22px;max-height:calc(100dvh - 140px);overflow:auto}html[data-theme] .public-nav .nav-links>a:not(.mobile-account-link){width:100%;max-width:none;min-height:62px;height:auto;padding:12px;font-size:14px;aspect-ratio:auto}html[data-theme] .public-nav .mobile-account-link{grid-column:1 / -1;padding:10px 4px}}
+@media(max-width:420px){html[data-theme] .public-nav .nav-links.open{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:18px}html[data-theme] .public-nav .nav-links>a:not(.mobile-account-link){aspect-ratio:auto;font-size:14px}}
+@media(prefers-reduced-motion:reduce){html[data-theme] .public-nav .nav-links>a:not(.mobile-account-link){transition:none}}
