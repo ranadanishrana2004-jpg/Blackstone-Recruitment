@@ -34,3 +34,17 @@ test('production accounts persist, use secure sessions and expose only real dash
   assert.equal((await call('/applications',{cookie:login.cookie})).response.status,401);
  }finally{if(server)await stop();await rm(dir,{recursive:true,force:true});}
 });
+
+test('production accepts www/non-www and repairs a missing or http scheme in APP_ORIGIN',async()=>{
+ const dir=await mkdtemp(path.join(os.tmpdir(),'blackstone-origin-'));
+ const setup=await createApp({production:true,origin:'http://bsukrecruitment.com/',dataDir:dir,testing:true});const server=setup.app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+ const post=from=>fetch(`http://127.0.0.1:${server.address().port}/api/auth/login`,{method:'POST',headers:{Origin:from,'X-Forwarded-Proto':'https','X-Blackstone-Request':'1','Content-Type':'application/json'},body:JSON.stringify({email:'nobody@example.test',password:'wrong'})});
+ try{
+  assert.equal((await post('https://bsukrecruitment.com')).status,401);
+  assert.equal((await post('https://www.bsukrecruitment.com')).status,401);
+  assert.equal((await post('https://evil.example')).status,403);
+  assert.equal((await post('http://bsukrecruitment.com')).status,403);
+ }finally{await new Promise(r=>server.close(r));setup.db.close();await rm(dir,{recursive:true,force:true});}
+ const dir2=await mkdtemp(path.join(os.tmpdir(),'blackstone-origin-'));
+ try{const s2=await createApp({production:true,origin:'www.bsukrecruitment.com',dataDir:dir2,testing:true});s2.db.close();}finally{await rm(dir2,{recursive:true,force:true});}
+});
