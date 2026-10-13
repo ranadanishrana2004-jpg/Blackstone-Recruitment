@@ -268,3 +268,14 @@ html[data-theme=dark] .public-nav .nav-links>a:not(.mobile-account-link):active{
 @media(max-width:1280px){html[data-theme] .public-nav .nav-links.open{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:12px;padding:22px;max-height:calc(100dvh - 140px);overflow:auto}html[data-theme] .public-nav .nav-links>a:not(.mobile-account-link){width:100%;max-width:none;min-height:62px;height:auto;padding:12px;font-size:14px;aspect-ratio:auto}html[data-theme] .public-nav .mobile-account-link{grid-column:1 / -1;padding:10px 4px}}
 @media(max-width:420px){html[data-theme] .public-nav .nav-links.open{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:18px}html[data-theme] .public-nav .nav-links>a:not(.mobile-account-link){aspect-ratio:auto;font-size:14px}}
 @media(prefers-reduced-motion:reduce){html[data-theme] .public-nav .nav-links>a:not(.mobile-account-link){transition:none}}
+/* Persistent public contact actions; reserved footer space prevents overlap. */
+.public{padding-bottom:90px}
+.floating-contact{position:fixed;left:max(24px,env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));z-index:25;display:flex;gap:10px;isolation:isolate}
+.floating-contact a{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:12px 20px;border-radius:999px;border:1px solid #b7a16a66;font-size:14px;font-weight:600;line-height:1.4;box-shadow:0 5px 18px #11170f26;transition:transform .18s,box-shadow .18s,background .18s}
+.floating-contact .floating-call{background:#20251d;color:#faf6eb}.floating-contact .floating-email{background:#d8c18a;color:#20251d;border-color:#c6aa6b}
+.floating-contact a:hover{transform:translateY(-2px);box-shadow:0 8px 22px #11170f38}.floating-contact a:active{transform:translateY(1px)}.floating-contact a:focus-visible{outline:3px solid var(--gold-deep);outline-offset:4px}.floating-contact .icon{width:20px;height:20px}
+html[data-theme=dark] .floating-call{background:#f3ecdd;color:#20251d}html[data-theme=dark] .floating-email{background:#cbb17a;color:#171b14}
+body:has(.floating-contact) #toast{bottom:96px}
+@media(max-width:600px){.floating-contact{left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom));gap:10px}.floating-contact a{flex:1;padding:12px 16px}.public{padding-bottom:84px}body:has(input:focus,textarea:focus,select:focus) .floating-contact{visibility:hidden;pointer-events:none}}
+@media(prefers-reduced-motion:reduce){.floating-contact a{transition:none}.floating-contact a:hover,.floating-contact a:active{transform:none}}
+@media print{.floating-contact{display:none}.public{padding-bottom:0}}
