@@ -8,7 +8,7 @@ try{
  await p.goto('http://127.0.0.1:4174/');await settled();await p.waitForTimeout(1700);
  await p.screenshot({path:'qa/platform/premium-home-desktop.png'});
  console.log('Image caption opacity:',await p.locator('.image-caption').evaluate(e=>getComputedStyle(e).opacity));
- await p.locator('.public-nav').getByRole('link',{name:'Find a role',exact:true}).click();await settled();
+ await p.locator('.public-nav').getByRole('link',{name:'Join us',exact:true}).click();await settled();
  assert.equal(await p.locator('#job-country option').count(),250);
  await p.locator('#job-country').selectOption('Japan');assert.ok(await p.locator('.empty-state').count());
  await p.locator('#job-country').selectOption('');await p.waitForTimeout(800);

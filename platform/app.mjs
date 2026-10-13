@@ -30,15 +30,18 @@ function extract(buffer,type){return new Promise(resolve=>{const worker=new Work
 export async function createApp(config={}){
  const production=config.production??process.env.NODE_ENV==='production',demo=config.demo??false;
  if(production&&demo)throw Error('Demo mode is disabled in production.');
- const origin=config.origin||process.env.APP_ORIGIN||'http://127.0.0.1:4174';
- if(production&&!origin.startsWith('https://'))throw Error('APP_ORIGIN must use HTTPS in production.');
+ // APP_ORIGIN may list several origins (comma-separated); the first is used in email links.
+ // Each origin also accepts its www/non-www twin, and production upgrades http:// to https://.
+ const origins=String(config.origin||process.env.APP_ORIGIN||'http://127.0.0.1:4174').split(',').map(o=>o.trim().replace(/\/+$/,'')).filter(Boolean).map(o=>/^https?:\/\//i.test(o)?o:`https://${o}`).map(o=>production?o.replace(/^http:\/\//i,'https://'):o).map(o=>o.toLowerCase());
+ if(!origins.length)throw Error('APP_ORIGIN is empty.');
+ const origin=origins[0],allowedOrigins=new Set(origins.flatMap(o=>{const u=new URL(o);const twin=u.hostname.startsWith('www.')?u.hostname.slice(4):`www.${u.hostname}`;return /^[\d.]+$|^localhost$/.test(u.hostname)?[u.origin]:[u.origin,`${u.protocol}//${twin}${u.port?':'+u.port:''}`];}));
  const db=openDB(config.dataDir||process.env.DATA_DIR||path.resolve('platform/data'));
  if(production&&db.prepare("SELECT value FROM settings WHERE key='demo_seeded'").get())throw Error('Use a clean production database; this database contains demo accounts.');
  if(demo)await seedDemo(db);
  const app=express();if(production)app.set('trust proxy',1);app.disable('x-powered-by');
  app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'","https://fonts.googleapis.com"],fontSrc:["'self'","https://fonts.gstatic.com"],imgSrc:["'self'","data:"],connectSrc:["'self'"],objectSrc:["'none'"],frameAncestors:["'none'"],upgradeInsecureRequests:production?[]:null}},strictTransportSecurity:production?undefined:false}));
  app.use('/api',rateLimit({windowMs:60000,limit:config.testing?10000:240,standardHeaders:'draft-8',legacyHeaders:false,message:{error:'Too many requests. Please wait a moment.'}}));
- app.use('/api',(req,res,next)=>{res.set('Cache-Control','no-store');if(!['GET','HEAD','OPTIONS'].includes(req.method)){if(req.get('x-blackstone-request')!=='1'||(req.get('origin')&&req.get('origin')!==origin))return res.status(403).json({error:'Request origin could not be verified. Refresh and try again.'});}next();});
+ app.use('/api',(req,res,next)=>{res.set('Cache-Control','no-store');if(!['GET','HEAD','OPTIONS'].includes(req.method)){if(req.get('x-blackstone-request')!=='1'||(req.get('origin')&&!allowedOrigins.has(req.get('origin').toLowerCase())))return res.status(403).json({error:'Request origin could not be verified. Refresh and try again.'});}next();});
  app.use(express.json({limit:'100kb'}));
  app.use((req,res,next)=>{const match=(req.headers.cookie||'').match(/(?:^|; )blackstone_session=([a-f0-9]{64})(?:;|$)/);if(match){req.sessionHash=digest(match[1]);req.user=db.prepare('SELECT u.* FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=? AND s.expires_at>? AND u.active=1').get(req.sessionHash,Date.now());}next();});
  app.use('/api',(req,res,next)=>{if(req.user?.role==='employer'&&!/^\/(?:employer(?:\/|$)|auth(?:\/|$)|config$|health$|jobs(?:\/|$)|conversations(?:\/|$)|companies(?:\/|$)|notifications(?:\/|$)|profile$|saved$|enquiries$)/.test(req.path))return res.status(403).json({error:'Use your company workspace to access recruitment records.'});next();});
