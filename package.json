@@ -11,7 +11,7 @@
     "start": "node --env-file-if-exists=.env platform/server.mjs",
     "setup": "node --env-file-if-exists=.env platform/setup.mjs",
     "test": "node --test platform/tests/*.test.mjs",
-    "check": "node --check platform/server.mjs && node --check platform/app.mjs && node --check platform/public/app.js && node --check platform/public/flows.js && node --check platform/public/motion.js && node --check platform/public/journey.js",
+    "check": "node --check platform/server.mjs && node --check platform/app.mjs && node --check platform/public/app.js && node --check platform/public/flows.js && node --check platform/public/motion.js && node --check platform/public/journey.js && node --check platform/public/job-finder.js",
     "build": "node scripts/build-platform.mjs",
     "build:concepts": "node scripts/build.mjs",
     "backup": "node --env-file-if-exists=.env platform/backup.mjs"

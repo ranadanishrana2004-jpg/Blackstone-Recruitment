@@ -8,7 +8,7 @@ function intendedDestination() {
 
 function bindJourney(path) {
   document.querySelectorAll('.nav-links a,.side-nav a').forEach(a=>{
-    const active=new URL(a.href).pathname===path;
+    const active=!a.hasAttribute('data-job-finder')&&new URL(a.href).pathname===path;
     if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
     if(a.closest('.nav-links'))a.classList.toggle('active',active);
   });
