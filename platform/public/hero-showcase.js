@@ -6,20 +6,35 @@ const heroSlides=[
  {image:'/assets/hero/slide-office.jpg',alt:'A bright, calm office with leather chairs and a city view',eyebrow:'Your next chapter',title:'Careers built<br>around you.',link:['/register?next=%2Fdashboard%2Fcv','Submit your CV']}
 ];
 const heroInterval=6500;
+// Illustrative roles shown in the ticker, always labelled "Example role" and linked to the matching search.
+const exampleRoles=[
+ ['Bus Driver','Driving & Transport','Manchester','UK'],
+ ['Care Assistant','Care & Support','Birmingham','UK'],
+ ['Registered Nurse','Healthcare','Riyadh','Saudi Arabia'],
+ ['HGV Class 1 Driver','Driving & Transport','Leeds','UK'],
+ ['Chef de Partie','Hospitality','Dubai','UAE'],
+ ['Warehouse Operative','Warehouse & Logistics','Bolton','UK'],
+ ['Senior Support Worker','Care & Support','Liverpool','UK'],
+ ['Security Officer','Security','London','UK'],
+ ['Electrician','Construction','Doha','Qatar'],
+ ['Consultant Physician','Healthcare','Jeddah','Saudi Arabia']
+].map(([title,sector,location,country])=>({title,sector,location,country,href:`/jobs?sector=${encodeURIComponent(sector)}`}));
 
 function postedLabel(value){
  const days=Math.floor((Date.now()-new Date(value).getTime())/86400000);
  return days<=0?'Posted today':days===1?'Posted yesterday':days<14?`Posted ${days} days ago`:'';
 }
 function tickerItem(j,sample){
- const href=sample?`/sample-jobs/${j.id}`:`/jobs/${j.id}`,where=`${j.location}, ${countryName(j.country)}`;
+ const href=j.href||(sample?`/sample-jobs/${j.id}`:`/jobs/${j.id}`),where=`${j.location}, ${countryName(j.country)}`;
  const meta=sample?'Example role':[j.workplace,postedLabel(j.created_at)].filter(Boolean).join(' · ');
  const fresh=!sample&&(Date.now()-new Date(j.created_at).getTime())<14*86400000;
  return `<li><a class="ticker-job" href="${href}"><span class="ticker-sector">${e(j.sector)}${fresh?'<em>New</em>':''}</span><strong>${e(j.title)}</strong><span class="ticker-meta">${e(where)}${meta?` · ${e(meta)}`:''}</span></a></li>`;
 }
 function heroShowcase(jobs){
- const live=jobs.slice(0,8),sample=!live.length,items=(sample?sampleRoles:live).map(j=>tickerItem(j,sample)).join('');
- const moving=(sample?sampleRoles:live).length>2;
+ // Live vacancies come first; labelled example roles keep the ticker full until enough are published.
+ const live=jobs.slice(0,8),sample=!live.length,examples=exampleRoles.slice(0,Math.max(0,10-live.length));
+ const roles=[...live.map(j=>[j,false]),...examples.map(j=>[j,true])],items=roles.map(([j,example])=>tickerItem(j,example)).join('');
+ const moving=roles.length>2;
  return `<div class="hero-image hero-showcase" role="region" aria-roledescription="carousel" aria-label="Blackstone highlights" data-hero-showcase>
  <div class="showcase-slides">${heroSlides.map((s,i)=>`<figure class="showcase-slide${i===0?' is-active':''}" role="group" aria-roledescription="slide" aria-label="${i+1} of ${heroSlides.length}" ${i?'aria-hidden="true"':''}><img ${i===0?`src="${s.image}" fetchpriority="high"`:`data-src="${s.image}"`} alt="${e(s.alt)}" decoding="async"><figcaption class="image-caption"><small>${e(s.eyebrow)}</small><strong>${s.title}</strong><a class="showcase-link" href="${s.link[0]}" ${i?'tabindex="-1"':''}>${e(s.link[1])} ${icon('arrow')}</a></figcaption></figure>`).join('')}</div>
  <div class="image-corner"></div><div class="hero-seal">B<small>GO FURTHER</small></div>
