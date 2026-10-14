@@ -1,6 +1,6 @@
 import {mkdir,cp,copyFile,writeFile,readFile} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
-for(const file of ['platform/email.mjs','platform/marketplace.mjs','platform/public/marketplace.js','platform/app.mjs','platform/server.mjs','platform/db.mjs','platform/backup.mjs','platform/parse-worker.mjs','platform/public/app.js','platform/public/flows.js','platform/public/motion.js','platform/public/journey.js','platform/public/job-finder.js']){const r=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});if(r.status!==0)throw Error(r.stderr);}
+for(const file of ['platform/email.mjs','platform/marketplace.mjs','platform/public/marketplace.js','platform/app.mjs','platform/server.mjs','platform/db.mjs','platform/backup.mjs','platform/parse-worker.mjs','platform/public/app.js','platform/public/flows.js','platform/public/motion.js','platform/public/journey.js','platform/public/job-finder.js','platform/public/hero-showcase.js']){const r=spawnSync(process.execPath,['--check',file],{encoding:'utf8'});if(r.status!==0)throw Error(r.stderr);}
 await mkdir('dist/platform',{recursive:true});
 await cp('platform/public','dist/platform/public',{recursive:true});
 for(const file of ['email.mjs','marketplace.mjs','app.mjs','db.mjs','server.mjs','parse-worker.mjs','setup.mjs','backup.mjs'])await copyFile('platform/'+file,'dist/platform/'+file);
