@@ -1,45 +1,52 @@
-// Home page hero: an image carousel with a live "now hiring" ticker of the newest published roles.
-const heroSlides=[
- {image:'/assets/hero/slide-luminous.jpg',alt:'Sunlit ivory architecture and champagne bronze details framing a contemporary glass tower',eyebrow:'A different perspective on recruitment',title:'Built on people.<br>Defined by possibility.',link:['/approach','Discover our approach']},
- {image:'/assets/hero/slide-lounge.jpg',alt:'An elegant boardroom with a walnut table overlooking a city skyline',eyebrow:'Executive & leadership search',title:'Leaders who shape<br>what comes next.',link:['/employers','Hire with Blackstone']},
- {image:'/assets/hero/slide-architecture.jpg',alt:'A glass skyscraper rising into a dark sky',eyebrow:'Worldwide opportunities',title:'Ambition<br>without borders.',link:['/jobs','Explore live roles']},
- {image:'/assets/hero/slide-office.jpg',alt:'A bright, calm office with leather chairs and a city view',eyebrow:'Your next chapter',title:'Careers built<br>around you.',link:['/register?next=%2Fdashboard%2Fcv','Submit your CV']}
-];
+// Home page hero: a carousel of job banners, one role per slide. Published vacancies lead;
+// clearly labelled example roles fill the carousel until enough are live.
 const heroInterval=6500;
-// Illustrative roles shown in the ticker, always labelled "Example role" and linked to the matching search.
 const exampleRoles=[
- ['Bus Driver','Driving & Transport','Manchester','UK'],
- ['Care Assistant','Care & Support','Birmingham','UK'],
- ['Registered Nurse','Healthcare','Riyadh','Saudi Arabia'],
- ['HGV Class 1 Driver','Driving & Transport','Leeds','UK'],
- ['Chef de Partie','Hospitality','Dubai','UAE'],
- ['Warehouse Operative','Warehouse & Logistics','Bolton','UK'],
- ['Senior Support Worker','Care & Support','Liverpool','UK'],
- ['Security Officer','Security','London','UK'],
- ['Electrician','Construction','Doha','Qatar'],
- ['Consultant Physician','Healthcare','Jeddah','Saudi Arabia']
-].map(([title,sector,location,country])=>({title,sector,location,country,href:`/jobs?sector=${encodeURIComponent(sector)}`}));
+ ['Bus Driver','Driving & Transport','Manchester','UK','PCV licence · Customer care · Route knowledge','Full-time'],
+ ['Care Assistant','Care & Support','Birmingham','UK','Personal care · Compassion · Teamwork','Full-time'],
+ ['Registered Nurse','Healthcare','Riyadh','Saudi Arabia','NMC registration · Acute care · Patient safety','Permanent'],
+ ['HGV Class 1 Driver','Driving & Transport','Leeds','UK','C+E licence · CPC · Tachograph','Full-time'],
+ ['Chef de Partie','Hospitality','Dubai','UAE','Fine dining · Food safety · Section lead','Permanent'],
+ ['Warehouse Operative','Warehouse & Logistics','Bolton','UK','Pick & pack · Forklift · Stock control','Full-time'],
+ ['Senior Support Worker','Care & Support','Liverpool','UK','Supported living · Care plans · Team lead','Permanent'],
+ ['Security Officer','Security','London','UK','SIA licence · CCTV · Access control','Shift-based'],
+ ['Electrician','Construction','Doha','Qatar','18th Edition · Commercial fit-out · Testing','Contract'],
+ ['Consultant Physician','Healthcare','Jeddah','Saudi Arabia','Internal medicine · Clinical leadership · MRCP','Permanent']
+].map(([title,sector,location,country,skills,type])=>({title,sector,location,country,skills,type,example:true}));
+// Each sector gets its own accent and monogram so consecutive banners feel distinct.
+const bannerThemes={'Healthcare':['#2f6f73','Hc'],'Care & Support':['#7a4e64','Cs'],'Driving & Transport':['#8a6a2c','Dt'],'Warehouse & Logistics':['#4f5d73','Wl'],'Construction':['#8a5a35','Co'],'Hospitality':['#7c3f3a','Ho'],'Security':['#3d4a5c','Se'],'Technology':['#3c5a7a','Te'],'Finance':['#4a6b4f','Fi'],'Operations':['#5d5a46','Op'],'Human Resources':['#6a4f7a','Hr'],'Marketing':['#7a5a3c','Mk']};
+const bannerTheme=sector=>bannerThemes[sector]||['#6d5a33',String(sector||'B').slice(0,2)];
 
 function postedLabel(value){
  const days=Math.floor((Date.now()-new Date(value).getTime())/86400000);
  return days<=0?'Posted today':days===1?'Posted yesterday':days<14?`Posted ${days} days ago`:'';
 }
-function tickerItem(j,sample){
- const href=j.href||(sample?`/sample-jobs/${j.id}`:`/jobs/${j.id}`),where=`${j.location}, ${countryName(j.country)}`;
- const meta=sample?'Example role':[j.workplace,postedLabel(j.created_at)].filter(Boolean).join(' · ');
- const fresh=!sample&&(Date.now()-new Date(j.created_at).getTime())<14*86400000;
- return `<li><a class="ticker-job" href="${href}"><span class="ticker-sector">${e(j.sector)}${fresh?'<em>New</em>':''}</span><strong>${e(j.title)}</strong><span class="ticker-meta">${e(where)}${meta?` · ${e(meta)}`:''}</span></a></li>`;
+function bannerSlide(j,i,total){
+ const [accent,mark]=bannerTheme(j.sector),live=!j.example;
+ const href=live?`/jobs/${j.id}`:`/jobs?sector=${encodeURIComponent(j.sector)}`;
+ const skills=live?String(j.requirements||'').split(/[,\n]/).map(s=>s.trim()).filter(Boolean).slice(0,3).join(' · '):j.skills;
+ const chips=(live?[j.workplace,j.type,`${money(j)} / ${j.period==='month'?'month':'year'}`]:[j.type]).filter(Boolean);
+ const badge=live?`<span class="banner-badge live"><span class="live-dot" aria-hidden="true"></span>${e(postedLabel(j.created_at)||'Now hiring')}</span>`:'<span class="banner-badge">Example role</span>';
+ const tab=i?'tabindex="-1"':'';
+ return `<article class="showcase-slide banner-slide${i===0?' is-active':''}" style="--accent:${accent}" role="group" aria-roledescription="slide" aria-label="${i+1} of ${total}: ${e(j.title)}" ${i?'aria-hidden="true"':''}>
+ <div class="banner-art" aria-hidden="true"><span class="banner-mark">${e(mark)}</span><svg class="banner-arcs" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice"><circle cx="330" cy="70" r="120"/><circle cx="330" cy="70" r="180"/><circle cx="330" cy="70" r="240"/><path d="M-20 330 C 120 250, 260 420, 420 300"/></svg></div>
+ <div class="banner-top">${badge}<span class="banner-count">${String(i+1).padStart(2,'0')} <i>/</i> ${String(total).padStart(2,'0')}</span></div>
+ <div class="banner-body">
+  <p class="banner-sector">${e(j.sector)}</p>
+  <h2 class="banner-title">${e(j.title)}</h2>
+  <p class="banner-where">${icon('location')}<span>${live&&j.company?`${e(j.company)} · `:''}${e(j.location)}, ${e(countryName(j.country))}</span></p>
+  <div class="banner-chips">${chips.map(c=>`<span>${e(c)}</span>`).join('')}</div>
+  ${skills?`<p class="banner-skills">${e(skills)}</p>`:''}
+  <div class="banner-actions"><a class="banner-cta" href="${href}" ${tab}>${live?'View role':'Explore similar roles'} ${icon('arrow')}</a>${live?'':`<a class="banner-secondary" href="/register?next=%2Fdashboard%2Fcv" ${tab}>Register your CV</a>`}</div>
+ </div>
+</article>`;
 }
 function heroShowcase(jobs){
- // Live vacancies come first; labelled example roles keep the ticker full until enough are published.
- const live=jobs.slice(0,8),sample=!live.length,examples=exampleRoles.slice(0,Math.max(0,10-live.length));
- const roles=[...live.map(j=>[j,false]),...examples.map(j=>[j,true])],items=roles.map(([j,example])=>tickerItem(j,example)).join('');
- const moving=roles.length>2;
- return `<div class="hero-image hero-showcase" role="region" aria-roledescription="carousel" aria-label="Blackstone highlights" data-hero-showcase>
- <div class="showcase-slides">${heroSlides.map((s,i)=>`<figure class="showcase-slide${i===0?' is-active':''}" role="group" aria-roledescription="slide" aria-label="${i+1} of ${heroSlides.length}" ${i?'aria-hidden="true"':''}><img ${i===0?`src="${s.image}" fetchpriority="high"`:`data-src="${s.image}"`} alt="${e(s.alt)}" decoding="async"><figcaption class="image-caption"><small>${e(s.eyebrow)}</small><strong>${s.title}</strong><a class="showcase-link" href="${s.link[0]}" ${i?'tabindex="-1"':''}>${e(s.link[1])} ${icon('arrow')}</a></figcaption></figure>`).join('')}</div>
- <div class="image-corner"></div><div class="hero-seal">B<small>GO FURTHER</small></div>
- <aside class="hiring-ticker${moving?' is-moving':''}" aria-label="${sample?'Example roles':'Newest vacancies'}"><div class="ticker-head"><span class="live-dot" aria-hidden="true"></span>${sample?'Roles we recruit for':'Now hiring'}<a href="/jobs">View all</a></div><div class="ticker-window"><ul class="ticker-track" style="--ticker-duration:${Math.max(12,(sample?sampleRoles:live).length*3.6)}s">${items}</ul>${moving?`<ul class="ticker-track" aria-hidden="true" style="--ticker-duration:${Math.max(12,(sample?sampleRoles:live).length*3.6)}s">${items.replaceAll('<a ','<a tabindex="-1" ')}</ul>`:''}</div></aside>
- <div class="showcase-controls"><div class="showcase-dots">${heroSlides.map((s,i)=>`<button type="button" class="showcase-dot${i===0?' is-active':''}" data-slide="${i}" aria-label="Show slide ${i+1}: ${e(s.eyebrow)}" ${i===0?'aria-current="true"':''}><span></span></button>`).join('')}</div><div class="showcase-arrows"><button type="button" class="showcase-arrow" data-step="-1" aria-label="Previous slide">${icon('arrow')}</button><button type="button" class="showcase-pause" aria-label="Pause slideshow" aria-pressed="false"><span aria-hidden="true"></span></button><button type="button" class="showcase-arrow" data-step="1" aria-label="Next slide">${icon('arrow')}</button></div></div>
+ const live=jobs.slice(0,8),roles=[...live,...exampleRoles.slice(0,Math.max(0,8-live.length))];
+ return `<div class="hero-image hero-showcase job-banners" role="region" aria-roledescription="carousel" aria-label="${live.length?'Latest vacancies':'Roles we recruit for'}" data-hero-showcase>
+ <div class="showcase-slides">${roles.map((j,i)=>bannerSlide(j,i,roles.length)).join('')}</div>
+ <div class="image-corner"></div>
+ <div class="showcase-controls"><div class="showcase-dots">${roles.map((j,i)=>`<button type="button" class="showcase-dot${i===0?' is-active':''}" data-slide="${i}" aria-label="Show ${e(j.title)}" ${i===0?'aria-current="true"':''}><span></span></button>`).join('')}</div><div class="showcase-arrows"><button type="button" class="showcase-arrow" data-step="-1" aria-label="Previous role">${icon('arrow')}</button><button type="button" class="showcase-pause" aria-label="Pause slideshow" aria-pressed="false"><span aria-hidden="true"></span></button><button type="button" class="showcase-arrow" data-step="1" aria-label="Next role">${icon('arrow')}</button></div></div>
 </div>`;
 }
 
@@ -48,12 +55,10 @@ function initHeroShowcase(root){
  const slides=[...root.querySelectorAll('.showcase-slide')],dots=[...root.querySelectorAll('.showcase-dot')],pause=root.querySelector('.showcase-pause');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  let index=0,timer=null,paused=reduced,hovering=false;
- const load=i=>{const img=slides[i]?.querySelector('img[data-src]');if(img){img.src=img.dataset.src;img.removeAttribute('data-src');}};
- load(1);
  function show(next){
-  next=(next+slides.length)%slides.length;if(next===index)return;load(next);load((next+1)%slides.length);
+  next=(next+slides.length)%slides.length;if(next===index)return;
   slides[index].classList.remove('is-active');slides[index].classList.add('is-leaving');const leaving=slides[index];setTimeout(()=>leaving.classList.remove('is-leaving'),1300);
-  slides.forEach((s,i)=>{const on=i===next;s.toggleAttribute('aria-hidden',!on);s.querySelector('.showcase-link').tabIndex=on?0:-1;});
+  slides.forEach((s,i)=>{const on=i===next;s.toggleAttribute('aria-hidden',!on);s.querySelectorAll('a').forEach(a=>a.tabIndex=on?0:-1);});
   slides[next].classList.add('is-active');
   dots.forEach((d,i)=>{d.classList.toggle('is-active',i===next);d.toggleAttribute('aria-current',i===next);});
   index=next;restart();
@@ -71,11 +76,11 @@ function initHeroShowcase(root){
   const dot=event.target.closest('[data-slide]'),arrow=event.target.closest('[data-step]');
   if(dot)show(Number(dot.dataset.slide));else if(arrow)show(index+Number(arrow.dataset.step));else if(event.target.closest('.showcase-pause'))setPaused(!paused);
  });
- root.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse'){hovering=true;root.classList.add('is-hovered');restart();}});
- root.addEventListener('pointerleave',()=>{hovering=false;root.classList.remove('is-hovered');restart();});
- root.addEventListener('keydown',event=>{if(event.key==='ArrowRight'||event.key==='ArrowLeft'){if(event.target.closest('.hiring-ticker'))return;event.preventDefault();show(index+(event.key==='ArrowRight'?1:-1));}});
+ root.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse'){hovering=true;restart();}});
+ root.addEventListener('pointerleave',()=>{hovering=false;restart();});
+ root.addEventListener('keydown',event=>{if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();show(index+(event.key==='ArrowRight'?1:-1));}});
  let startX=null;
- root.addEventListener('pointerdown',event=>{if(!event.target.closest('.hiring-ticker,.showcase-controls'))startX=event.clientX;});
+ root.addEventListener('pointerdown',event=>{if(!event.target.closest('a,button'))startX=event.clientX;});
  root.addEventListener('pointerup',event=>{if(startX===null)return;const dx=event.clientX-startX;startX=null;if(Math.abs(dx)>45)show(index+(dx<0?1:-1));});
  document.addEventListener('visibilitychange',()=>{if(document.contains(root))restart();});
  setPaused(paused);
