@@ -13,8 +13,10 @@ test('hero ticker lists live roles, escapes them and links to each vacancy',()=>
  assert.match(html,/href="\/jobs\/7"/);assert.match(html,/Bus Driver &lt;script&gt;/);assert.doesNotMatch(html,/<script>/);
  assert.match(html,/Now hiring/);assert.match(html,/is-moving/);assert.match(html,/<em>New<\/em>/);
  assert.equal((html.match(/class="showcase-slide[ "]/g)||[]).length,4);
+ const track=html.slice(html.indexOf('ticker-track'));assert.ok(track.indexOf('/jobs/7')<track.indexOf('Example role'),'live roles come before examples');
+ assert.equal((track.split('</ul>')[0].match(/<li>/g)||[]).length,10);
 });
 test('hero ticker falls back to clearly labelled example roles when nothing is published',()=>{
  const html=context.heroShowcase([]);
- assert.match(html,/Roles we recruit for/);assert.match(html,/Example role/);assert.match(html,/href="\/sample-jobs\//);assert.doesNotMatch(html,/href="\/jobs\/\d/);
+ assert.match(html,/Roles we recruit for/);assert.match(html,/Example role/);assert.match(html,/href="\/jobs\?sector=Driving%20%26%20Transport"/);assert.doesNotMatch(html,/href="\/jobs\/\d/);
 });
